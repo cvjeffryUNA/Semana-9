@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conceptos de LAN (Switching)</title>
+    <style>
+        :root {
+            --una-red: #c41e3a;
+            --una-red-dark: #8b1538;
+            --text-light: #f8f9fa;
+            --text-dark: #2c3e50;
+            --accent: #3498db;
+            --section-bg: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-dark);
+            overflow-x: hidden;
+        }
+
+        .hero {
+            height: 100vh;
+            background: linear-gradient(135deg, var(--una-red) 0%, var(--una-red-dark) 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            margin-top: 0;
+            z-index: 1;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            animation: fadeInUp 1s ease-out;
+            padding-top: 80px;
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .hero .subtitle {
+            font-size: 1.5rem;
+            font-weight: 300;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            animation: bounce 2s infinite;
+        }
+
+        .content-section {
+            padding: 80px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: slideInUp 0.8s ease-out;
+        }
+
+        .section-card {
+            background: var(--section-bg);
+            border-radius: 15px;
+            padding: 40px;
+            margin-bottom: 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border-left: 5px solid var(--una-red);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .section-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .section-number {
+            display: inline-block;
+            background: var(--una-red);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 50px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: var(--una-red);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .section-content {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: var(--text-dark);
+        }
+
+        .section-content p {
+            margin-bottom: 15px;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(196, 30, 58, 0.1) 0%, rgba(196, 30, 58, 0.2) 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border-left: 4px solid var(--una-red);
+        }
+
+        .benefits-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .benefits-list li {
+            padding: 10px 0;
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .benefits-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--una-red);
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .example-box {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+
+        .example-title {
+            color: var(--accent);
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            40% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+            60% {
+                transform: translateX(-50%) translateY(-5px);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero .subtitle {
+                font-size: 1.2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .section-content {
+                font-size: 1.1rem;
+            }
+            
+            .content-section {
+                padding: 40px 15px;
+            }
+            
+            .section-card {
+                padding: 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <!-- Added university and instructor information -->
+            <div style="margin-bottom: 2rem; opacity: 0.9;">
+                <h3 style="font-size: 1.8rem; font-weight: 400; margin-bottom: 0.5rem;">Universidad Nacional</h3>
+                <p style="font-size: 1.2rem; font-weight: 300;">Ing. Jeffry Carballo Vargas, Mag.</p>
+            </div>
+            <h1 id="hero-title">Conceptos de LAN (Switching)</h1>
+            <p class="subtitle">Fundamentos de Redes de Área Local y Conmutación</p>
+        </div>
+        <div class="scroll-indicator">
+            <div style="font-size: 2rem;">↓</div>
+            <div>Desplázate para aprender</div>
+        </div>
+    </section>
+
+    <!-- Content Sections -->
+    <div class="content-section">
+        <!-- Section 1: ¿Qué es una LAN? -->
+        <div class="section-card">
+            <div class="section-number">1</div>
+            <h2 class="section-title">¿Qué es una LAN?</h2>
+            <div class="section-content">
+                <p>Una <strong>LAN (Red de Área Local)</strong> es como una carretera interna dentro de un edificio.</p>
+                <p>Permite que las computadoras, impresoras y otros equipos se comuniquen entre sí y compartan cosas como archivos, Internet o impresoras.</p>
+                
+                <div class="highlight">
+                    <h4>Características principales:</h4>
+                    <ul class="benefits-list">
+                        <li>Está limitada a lugares pequeños: una oficina, una escuela, una casa</li>
+                        <li>Es muy rápida (transmite información en fracciones de segundo)</li>
+                        <li>Todo el equipo conectado pertenece a la misma organización o persona</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 2: ¿Qué es el Switching? -->
+        <div class="section-card">
+            <div class="section-number">2</div>
+            <h2 class="section-title">¿Qué es el Switching?</h2>
+            <div class="section-content">
+                <p>Imagine que tiene un conserje en un edificio que recibe cartas y se asegura de que lleguen directamente a la puerta correcta, sin molestar a todos los vecinos.</p>
+                <p>Eso es lo que hace el <strong>switch (conmutador)</strong>: recibe los mensajes de una computadora y los envía solo a quien deben llegar, no a todas las computadoras al mismo tiempo.</p>
+                
+                <div class="highlight">
+                    <h4>Esto trae beneficios:</h4>
+                    <ul class="benefits-list">
+                        <li>La red funciona más rápido</li>
+                        <li>Hay menos "ruido" (menos información viajando innecesariamente)</li>
+                        <li>Cada computadora recibe solo lo que le corresponde</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 3: ¿Qué es una VLAN? -->
+        <div class="section-card">
+            <div class="section-number">3</div>
+            <h2 class="section-title">¿Qué es una VLAN?</h2>
+            <div class="section-content">
+                <p>Ahora imagine que en el mismo edificio hay oficinas de diferentes empresas.</p>
+                <p>Aunque todas usan el mismo pasillo, cada empresa tiene su propio espacio privado donde solo su gente puede entrar.</p>
+                
+                <p>Eso es una <strong>VLAN (Red Local Virtual)</strong>:</p>
+                
+                <div class="highlight">
+                    <ul class="benefits-list">
+                        <li>Divide la red en grupos separados, aunque físicamente todo esté conectado al mismo switch</li>
+                        <li>Aumenta la seguridad, porque la información de un grupo no se mezcla con la de otro</li>
+                        <li>Facilita la organización: si alguien cambia de oficina, solo se ajusta la configuración, no se mueve ningún cable</li>
+                    </ul>
+                </div>
+
+                <div class="example-box">
+                    <div class="example-title">Ejemplo fácil: En un colegio</div>
+                    <ul class="benefits-list">
+                        <li>Una VLAN para la administración</li>
+                        <li>Otra VLAN para los profesores</li>
+                        <li>Otra VLAN para los estudiantes</li>
+                    </ul>
+                    <p><em>De esta forma, cada grupo usa la red sin interferir en la información de los demás.</em></p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section 4: ¿Por qué es útil? -->
+        <div class="section-card">
+            <div class="section-number">4</div>
+            <h2 class="section-title">¿Por qué es útil?</h2>
+            <div class="section-content">
+                <div class="highlight">
+                    <ul class="benefits-list">
+                        <li><strong>Más orden:</strong> cada grupo de trabajo tiene su propio "carril" en la carretera digital</li>
+                        <li><strong>Más seguridad:</strong> se evita que personas no autorizadas vean información privada</li>
+                        <li><strong>Menos tráfico:</strong> la red es más rápida porque no se envían mensajes innecesarios a todos</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add typing effect to hero title
+        function typeWriter(element, text, speed = 100) {
+            let i = 0;
+            element.innerHTML = '';
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        // Initialize typing effect when page loads
+        window.addEventListener('load', () => {
+            const heroTitle = document.querySelector('#hero-title');
+            if (heroTitle) {
+                const originalText = heroTitle.textContent;
+                setTimeout(() => {
+                    typeWriter(heroTitle, originalText, 150);
+                }, 500);
+            }
+        });
+
+        // Smooth scrolling for better UX
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add scroll behavior
+            const scrollIndicator = document.querySelector('.scroll-indicator');
+            if (scrollIndicator) {
+                scrollIndicator.addEventListener('click', () => {
+                    document.querySelector('.content-section').scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                });
+            }
+
+            // Animate sections on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.animation = 'slideInUp 0.8s ease-out forwards';
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.section-card').forEach(card => {
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
